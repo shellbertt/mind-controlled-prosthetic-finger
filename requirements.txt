@@ -1,0 +1,6 @@
+brainflow
+matplotlib
+mne
+numpy
+pandas
+scikit-learn
