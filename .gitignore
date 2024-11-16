@@ -1,5 +1,8 @@
 # Vim swap files
 .*.swp
 .*.swo
-# Python venv
+# Python
 venv/
+.ipynb_checkpoints
+# Numpy objects
+*.npy

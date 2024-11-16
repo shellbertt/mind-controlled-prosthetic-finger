@@ -1,11 +1,6 @@
-# Author: Arthur Mensch <arthur.mensch@m4x.org>
-# License: BSD 3 clause
-
 import time
-
 import matplotlib.pyplot as plt
 import numpy as np
-
 from sklearn.datasets import fetch_openml
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -14,16 +9,17 @@ from sklearn.utils import check_random_state
 
 # Turn down for faster convergence
 t0 = time.time()
-train_samples = 5000
 
 # Load data from https://www.openml.org/d/554
-X, y = fetch_openml("mnist_784", version=1, return_X_y=True, as_frame=False)
+X = np.load("X.npy")
+y = np.load("y.npy")
 print("X")
 print(type(X))
 print(X.shape)
 print("y")
 print(type(y))
 print(y.shape)
+train_samples = len(y)
 
 random_state = check_random_state(0)
 permutation = random_state.permutation(X.shape[0])
@@ -32,7 +28,7 @@ y = y[permutation]
 X = X.reshape((X.shape[0], -1))
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, train_size=train_samples, test_size=10000
+    X, y, train_size=None, test_size=None
 )
 
 scaler = StandardScaler()
@@ -54,7 +50,7 @@ scale = np.abs(coef).max()
 for i in range(10):
     l1_plot = plt.subplot(2, 5, i + 1)
     l1_plot.imshow(
-        coef[i].reshape(28, 28),
+        coef[i].reshape(4, 200),
         interpolation="nearest",
         cmap=plt.cm.RdBu,
         vmin=-scale,
