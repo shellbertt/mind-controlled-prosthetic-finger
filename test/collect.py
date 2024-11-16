@@ -31,8 +31,6 @@ def open_close(board):
     current_data = board.get_board_data()
     total = 0
     for i in range(50):
-# read all and pad to longest
-# synthetic
         print("CLOSE" if i % 2 == 0 else "OPEN")
         plt.pause(1.1)
         current_data = board.get_board_data(COLS)

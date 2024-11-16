@@ -1,0 +1,8 @@
+filter harder
+read all and pad to longest
+just classify: chillin, squeezing, other?
+move out of test folder
+synthetic data?
+different models?
+electrode on hand
+try isabel
