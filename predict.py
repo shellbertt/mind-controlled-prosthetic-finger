@@ -10,7 +10,7 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 
 def predict():
     suffix = "2"
-    with open("fmodel{suffix}.pkl", "rb") as f:
+    with open(f"model{suffix}.pkl", "rb") as f:
         clf = pickle.load(f)
     print(clf)
 
@@ -29,7 +29,7 @@ def predict():
 #     graphd = plt.plot((), ())[0]
 
     total = 0
-    steps = 600
+    steps = 6000
     window = np.array(())
     for i in range(steps):
 #         plt.pause(1.4)

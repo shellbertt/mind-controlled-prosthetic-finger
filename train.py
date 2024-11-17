@@ -69,5 +69,5 @@ def evaluate(clf, X_test, y_test):
 
 print(f"{np.mean([evaluate(*train(clf)) for _ in range(100)])=}")
 
-with open("fmodel{suffix}.pkl", "wb") as f:
+with open(f"model{suffix}.pkl", "wb") as f:
     pickle.dump(train(clf)[0], f)
