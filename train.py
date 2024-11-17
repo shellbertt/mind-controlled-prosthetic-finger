@@ -5,6 +5,7 @@ from sklearn.linear_model import *
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import check_random_state
+import pickle
 
 
 # Load data from https://www.openml.org/d/554
@@ -24,7 +25,7 @@ train_samples = len(y)
 # Turn up tolerance for faster convergence
 clf = LogisticRegression(C=50.0 / train_samples, penalty="l2", solver="liblinear", tol=0.01)
 
-def evaluate(clf):
+def train(clf):
     global X, y
 
     t0 = time.time()
@@ -44,13 +45,29 @@ def evaluate(clf):
     X_test = scaler.transform(X_test)
 
     clf.fit(X_train, y_train)
+
+    run_time = time.time() - t0
+    print("Train in %.3f s" % run_time)
+
+    return (clf, X_test, y_test)
+
+def evaluate(clf, X_test, y_test):
+    global X, y
+
+    t0 = time.time()
+
     sparsity = np.mean(clf.coef_ == 0) * 100
     score = clf.score(X_test, y_test)
 #   print('Best C % .4f' % clf.C_)
     print("Sparsity with L1 penalty: %.2f%%" % sparsity)
     print("Test score with L1 penalty: %.4f" % score)
+
     run_time = time.time() - t0
-    print("Example run in %.3f s" % run_time)
+    print("Predict in %.3f s" % run_time)
+
     return score
 
-print(f"{np.mean([evaluate(clf) for _ in range(100)])=}")
+print(f"{np.mean([evaluate(*train(clf)) for _ in range(100)])=}")
+
+with open("fmodel{suffix}.pkl", "wb") as f:
+    pickle.dump(train(clf)[0], f)
