@@ -26,13 +26,18 @@ def open_close(board):
     board.start_stream()
 
     plt.ion()
-    graph = plt.plot((), ())[0]
+    grapha = plt.plot((), ())[0]
+    graphb = plt.plot((), ())[0]
+    graphc = plt.plot((), ())[0]
+    graphd = plt.plot((), ())[0]
 
     current_data = board.get_board_data()
     total = 0
-    for i in range(50):
-        print("CLOSE" if i % 2 == 0 else "OPEN")
-        plt.pause(1.1)
+    steps = 60
+    for i in range(steps):
+        pred = i // 10 % 2 == 0
+        print("SQUEEZE" if pred else "RELAX")
+        plt.pause(1.4)
         current_data = board.get_board_data(COLS)
         print(type(current_data))
         print(current_data.shape)
@@ -41,15 +46,23 @@ def open_close(board):
         eeg_data = current_data[eeg_channels]
         # filter in place
         for channel in range(eeg_data.shape[0]):
-            DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 50.0, 5, FilterTypes.BUTTERWORTH, 1)
-            DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 2.0, 4, FilterTypes.BUTTERWORTH, 0)
+            DataFilter.remove_environmental_noise(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 2)
+            DataFilter.perform_bandpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 5.0, 20.0, 5, FilterTypes.BUTTERWORTH, 0)
+            DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 20.0, 5, FilterTypes.BUTTERWORTH, 1)
+            DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 1.0, 4, FilterTypes.BUTTERWORTH, 0)
         print(eeg_data.flatten().shape)
         total += len(eeg_data.flatten())
         X = np.append(X, eeg_data.flatten())
-        y = np.append(y, i % 2)
+        y = np.append(y, pred)
 
-        graph.remove()
-        graph = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0], color="red")[0]
+        grapha.remove()
+        grapha = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[3], color="yellow")[0]
+        graphb.remove()
+        graphb = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0], color="red")[0]
+        graphc.remove()
+        graphc = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[1], color="green")[0]
+        graphd.remove()
+        graphd = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[2], color="blue")[0]
 
     print("Ending stream")
     board.stop_stream()
