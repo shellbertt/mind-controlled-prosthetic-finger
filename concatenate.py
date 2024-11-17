@@ -13,7 +13,7 @@ def load(X_name, y_name):
     return (X, y)
 
 def concatenate():
-    a, b, c = "to3", "4", "to4"
+    a, b, c = "7", "8", "78"
     X1, y1 = load(f"X{a}.npy", f"y{a}.npy")
     X2, y2 = load(f"X{b}.npy", f"y{b}.npy")
     Xnew = np.concat((X1, X2))

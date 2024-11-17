@@ -8,8 +8,7 @@ from sklearn.utils import check_random_state
 import pickle
 
 
-# Load data from https://www.openml.org/d/554
-suffix = "2"
+suffix = "6Filtered"
 X = np.load(f"backup/X{suffix}.npy")
 # base = 3 * 200
 # X = X[:,base:base+200]
@@ -21,6 +20,7 @@ print("y")
 print(type(y))
 print(y.shape)
 train_samples = len(y)
+# TODO do the overlaps here after separate train and test
 
 # Turn up tolerance for faster convergence
 clf = LogisticRegression(C=50.0 / train_samples, penalty="l2", solver="liblinear", tol=0.01)
