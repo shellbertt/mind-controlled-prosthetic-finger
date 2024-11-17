@@ -18,7 +18,7 @@ def prepare_session():
     return board
 
 
-def open_close(board):
+def collect(board):
     X = np.array(())
     y = np.array(())
 
@@ -38,25 +38,20 @@ def open_close(board):
         pred = i % 2 == 0
         print("SQUEEZE" if pred else "RELAX")
         plt.pause(14)
-        current_data = board.get_board_data(COLS * 10)
+        current_data = board.get_board_data(COLS * 12)
         print(type(current_data))
         print(current_data.shape)
         print(current_data)
         eeg_channels = board.get_eeg_channels(board_id)
         eeg_data = current_data[eeg_channels]
-        # filter in place
-        for channel in range(eeg_data.shape[0]):
-            DataFilter.remove_environmental_noise(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 2)
-            DataFilter.perform_bandpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 5.0, 20.0, 5, FilterTypes.BUTTERWORTH, 0)
-            DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 20.0, 5, FilterTypes.BUTTERWORTH, 1)
-            DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 1.0, 4, FilterTypes.BUTTERWORTH, 0)
         print(eeg_data.shape)
         if i >= 2:
             total += len(eeg_data.flatten())
-            for j in range(COLS, eeg_data.shape[1]):
-#                 print(f"add {j-COLS=} {j=} {pred=}")
-                X = np.append(X, eeg_data[:,j-COLS:j].flatten())
-                y = np.append(y, pred)
+            if len(X) == 0:
+                X = np.array([eeg_data])
+            else:
+                X = np.vstack((X, np.array([eeg_data])))
+            y = np.append(y, pred)
 
         grapha.remove()
         grapha = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[3], color="yellow")[0]
@@ -72,13 +67,13 @@ def open_close(board):
 
     width = COLS * len(eeg_channels)
     print(X.shape, y.shape, width, total)
-    X = X.reshape((-1, width))
+#     X = X.reshape((-1, width))
     return (X, y)
 
 
 if __name__ == "__main__":
     board = prepare_session()
-    X, y = open_close(board)
+    X, y = collect(board)
     print("X")
     print(X)
     print(X.shape)
