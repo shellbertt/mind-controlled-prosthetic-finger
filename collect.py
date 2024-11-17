@@ -33,12 +33,12 @@ def open_close(board):
 
     current_data = board.get_board_data()
     total = 0
-    steps = 80
+    steps = 8
     for i in range(steps):
-        pred = i // 10 % 2 == 0
+        pred = i % 2 == 0
         print("SQUEEZE" if pred else "RELAX")
-        plt.pause(1.4)
-        current_data = board.get_board_data(COLS)
+        plt.pause(14)
+        current_data = board.get_board_data(COLS * 10)
         print(type(current_data))
         print(current_data.shape)
         print(current_data)
@@ -50,11 +50,13 @@ def open_close(board):
             DataFilter.perform_bandpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 5.0, 20.0, 5, FilterTypes.BUTTERWORTH, 0)
             DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 20.0, 5, FilterTypes.BUTTERWORTH, 1)
             DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 1.0, 4, FilterTypes.BUTTERWORTH, 0)
-        print(eeg_data.flatten().shape)
-        if i >= 20:
+        print(eeg_data.shape)
+        if i >= 2:
             total += len(eeg_data.flatten())
-            X = np.append(X, eeg_data.flatten())
-            y = np.append(y, pred)
+            for j in range(COLS, eeg_data.shape[1]):
+#                 print(f"add {j-COLS=} {j=} {pred=}")
+                X = np.append(X, eeg_data[:,j-COLS:j].flatten())
+                y = np.append(y, pred)
 
         grapha.remove()
         grapha = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[3], color="yellow")[0]
