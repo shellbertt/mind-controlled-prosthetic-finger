@@ -33,7 +33,7 @@ def open_close(board):
 
     current_data = board.get_board_data()
     total = 0
-    steps = 60
+    steps = 80
     for i in range(steps):
         pred = i // 10 % 2 == 0
         print("SQUEEZE" if pred else "RELAX")
@@ -51,9 +51,10 @@ def open_close(board):
             DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 20.0, 5, FilterTypes.BUTTERWORTH, 1)
             DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 1.0, 4, FilterTypes.BUTTERWORTH, 0)
         print(eeg_data.flatten().shape)
-        total += len(eeg_data.flatten())
-        X = np.append(X, eeg_data.flatten())
-        y = np.append(y, pred)
+        if i >= 20:
+            total += len(eeg_data.flatten())
+            X = np.append(X, eeg_data.flatten())
+            y = np.append(y, pred)
 
         grapha.remove()
         grapha = plt.plot(np.arange(eeg_data.shape[1]), eeg_data[3], color="yellow")[0]
